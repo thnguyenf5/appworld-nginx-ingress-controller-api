@@ -1,0 +1,11 @@
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: jwt-policy-keycloakidp
+  namespace: dadjokes
+spec:
+  jwt:
+    realm: MyProductAPI
+    token: $http_token
+    jwksURI: http://keycloak.keycloak.svc.cluster.local:8080/realms/master/protocol/openid-connect/certs
+    keyCache: 1h

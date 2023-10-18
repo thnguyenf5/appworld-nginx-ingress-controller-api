@@ -1,0 +1,58 @@
+##################################################################################################
+# CREATE VIRTUALSERVER - cafe
+##################################################################################################
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: cafe-vs
+  namespace: cafe
+spec:
+  host: cafe.dev.local
+  policies:
+  - name: oidc-polcy
+  tls:
+    secret: cafe-secret
+    redirect:
+      enable: true  #Redirect from http > https
+      code: 301
+  upstreams:
+  - name: tea
+    service: tea-svc
+    port: 80
+    lb-method: round_robin
+    slow-start: 20s
+    healthCheck:
+      enable: true
+      path: /tea
+      interval: 20s
+      jitter: 3s
+      fails: 5
+      passes: 2
+      connect-timeout: 30s
+      read-timeout: 20s
+  - name: coffee
+    service: coffee-svc
+    port: 80
+    lb-method: round_robin
+    healthCheck:
+      enable: true
+      path: /coffee
+      interval: 10s
+      jitter: 3s
+      fails: 3
+      passes: 2
+      connect-timeout: 30s
+      read-timeout: 20s
+  routes:
+  - path: /
+    action:
+      redirect:
+        url: https://cafe.dev.local/coffee
+        code: 302  #Redirect from / > /coffee
+  - path: /tea
+    action:
+      pass: tea
+  - path: /coffee
+    action:
+      pass: coffee

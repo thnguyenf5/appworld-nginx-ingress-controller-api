@@ -1,0 +1,21 @@
+##################################################################################################
+# CREATE VIRTUALSERVER - dadjokes
+##################################################################################################
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: dad-jokes
+  namespace: dadjokes
+spec:
+  host: dadjokes.f5.local
+  policies:
+  - name: jwt-policy-keycloakidp
+  upstreams:
+  - name: dad-jokes
+    service: dad-jokes-svc
+    port: 80
+  routes:
+    - path: /
+      action:
+        pass: dad-jokes  

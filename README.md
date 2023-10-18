@@ -1,7 +1,4 @@
-# appworld-nginx-ingress-api
-
-
-# api-gateway
+# appworld-nginx-ingress-controller-api
 
 # Windows:
 Install Firefox
@@ -306,35 +303,40 @@ spec:
 ```
 
 kubectl apply -f docs/tcp/loadbalancer-nlk.yaml
+## troubleshooting NLK
+curl -X GET -s 'http://10.1.10.5:9000/api/9/stream/upstreams/'
+
+curl -X POST -d '{"server": "10.1.10.6:30564"}' -s 'http://10.1.10.5:9000/api/9/stream/upstreams/nginx-lb-http/servers'
+
+curl -X POST -d '{"server": "10.1.10.6:31674"}' -s 'http://10.1.10.5:9000/api/9/stream/upstreams/nginx-lb-https/servers'
 
 
 
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout dev.local.key -out dev.local.crt
 
-
+# Install Base infrastructure
 cd /home/user01/base-infrastructure
 
-# install cafe app
+## install cafe app
 kubectl apply -f cafe.yaml
 kubectl apply -f cafe-vs.yaml
 
-# install dadjokes api
+## install dadjokes api
 kubectl apply -f dadjokes.yaml
 kubectl apply -f dadjokes-vs.yaml
 
-# install keycloak
+## install keycloak
 kubectl apply -f keycloak.yaml
 kubectl apply -f keycloak-vs.yaml
 
-# configure monitoring persistant storage
-
+## configure monitoring persistant storage
+kubectl apply -f monitoring.yaml
+## create nginx prometheus service and service monitor
+kubectl apply -f nginx-ingress-metrics-prometheus.yaml
+## install kube prometheus stack
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
 helm repo update
-
-
-kubectl apply -f monitoring.yaml
-kubectl apply -f nginx-ingress-metrics-prometheus.yaml
 
 helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --set=alertmanager.persistentVolume.existingClaim=kube-prometheus-stack-pvc,server.persistentVolume.existingClaim=kube-prometheus-stack-pvc,grafana.persistentVolume.existingClaim=kube-prometheus-stack-pvc,serviceMonitorSelectorNilUsesHelmValues=false,podMonitorSelectorNilUsesHelmValues=false
 
@@ -345,12 +347,12 @@ kubectl apply -f grafana-vs.yaml
 kubectl exec --namespace monitoring -it kube-prometheus-stack-grafana-855dcd954b-8ft57 grafana-cli admin reset-admin-password appworld
 
 
-curl -X GET -s 'http://10.1.10.5:9000/api/9/stream/upstreams/'
 
-curl -X POST -d '{"server": "10.1.10.6:30564"}' -s 'http://10.1.10.5:9000/api/9/stream/upstreams/nginx-lb-http/servers'
-
-curl -X POST -d '{"server": "10.1.10.6:31674"}' -s 'http://10.1.10.5:9000/api/9/stream/upstreams/nginx-lb-https/servers'
 
 
 ## crapi
 helm install --create-namespace --namespace crapi crapi . --values values.yaml
+
+
+## misc commands
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout dev.local.key -out dev.local.crt
