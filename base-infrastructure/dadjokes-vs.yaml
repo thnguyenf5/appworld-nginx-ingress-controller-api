@@ -1,0 +1,19 @@
+##################################################################################################
+# CREATE VIRTUALSERVER - dadjokes
+##################################################################################################
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: dad-jokes-virtualserver
+  namespace: dadjokes
+spec:
+  host: dadjokes-api.dev.local
+  upstreams:
+  - name: dad-jokes
+    service: dad-jokes-svc
+    port: 80
+  routes:
+    - path: /
+      action:
+        pass: dad-jokes

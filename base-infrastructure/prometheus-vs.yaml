@@ -1,0 +1,24 @@
+##################################################################################################
+# CREATE VIRTUALSERVER - prometheus
+##################################################################################################
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: prometheus-vs
+  namespace: monitoring
+spec:
+  host: prometheus.dev.local
+  tls:
+    secret: tls-monitoring-secret
+    redirect:
+      enable: true  #Redirect from http > https
+      code: 301
+  upstreams:
+  - name: prometheus
+    service: kube-prometheus-stack-prometheus
+    port: 9090
+  routes:
+    - path: /
+      action:
+        pass: prometheus

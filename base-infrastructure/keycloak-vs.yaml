@@ -1,0 +1,24 @@
+##################################################################################################
+# CREATE VIRTUALSERVER - keycloak
+##################################################################################################
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: keycloak-vs
+  namespace: keycloak
+spec:
+  host: keycloak.dev.local
+  tls:
+    secret: tls-keycloak-secret
+    redirect:
+      enable: true  #Redirect from http > https
+      code: 301
+  upstreams:
+  - name: keycloak
+    service: keycloak
+    port: 8080
+  routes:
+  - path: /
+    action:
+      pass: keycloak

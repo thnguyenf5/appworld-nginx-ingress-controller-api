@@ -1,0 +1,67 @@
+##################################################################################################
+# UPDATE SERVICE - crapi-web
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: crapi
+    meta.helm.sh/release-namespace: crapi
+  labels:
+    app: crapi-web
+    app.kubernetes.io/managed-by: Helm
+    release: crapi
+  name: crapi-web
+  namespace: crapi
+spec:
+  type: ClusterIP
+  ports:
+  - name: nginx
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: nginx-ssl
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    app: crapi-web
+##################################################################################################
+# CREATE VIRTUALSERVER - mailhog
+##################################################################################################
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: crapi-web-vs
+  namespace: crapi
+spec:
+  host: api.mypremiumdealership.com
+  upstreams:
+  - name: crapi-web
+    service: crapi-web
+    port: 80
+  routes:
+    - path: /
+      action:
+        pass: crapi-web
+---
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: crapi-web-vs-https
+  namespace: crapi
+spec:
+  host: api.mypremiumdealership.com
+  tls:
+    secret: crapi-secret
+  upstreams:
+  - name: crapi-web
+    service: crapi-web
+    port: 443
+  routes:
+    - path: /
+      action:
+        pass: crapi-web

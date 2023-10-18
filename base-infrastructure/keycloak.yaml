@@ -1,0 +1,256 @@
+##################################################################################################
+# CREATE NAMESPACE - keycloak
+##################################################################################################
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: keycloak
+
+##################################################################################################
+# CREATE SECRETS - keycloak
+##################################################################################################
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-creds
+  namespace: keycloak
+type: Opaque
+stringData:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: aabbcc++112233
+  POSTGRES_DB: keycloak
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tls-keycloak-secret
+  namespace: keycloak
+type: kubernetes.io/tls
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUQ5VENDQXQyZ0F3SUJBZ0lVSFRDVFl6NmlVUnAydkY1MW9ZY0JwTlNJV0J3d0RRWUpLb1pJaHZjTkFRRUwKQlFBd2dZa3hDekFKQmdOVkJBWVRBbFZUTVJNd0VRWURWUVFJREFwRFlXeHBabTl5Ym1saE1SRXdEd1lEVlFRSApEQWhUWVc0Z1NtOXpaVEVQTUEwR0ExVUVDZ3dHUmpVZ1JHVjJNUXd3Q2dZRFZRUUxEQU5FWlhZeEZEQVNCZ05WCkJBTU1DeW91WkdWMkxteHZZMkZzTVIwd0d3WUpLb1pJaHZjTkFRa0JGZzUxYzJWeVFHUmxkaTVzYjJOaGJEQWUKRncweU16RXdNVGd3TURJNE1UVmFGdzB5TkRFd01UY3dNREk0TVRWYU1JR0pNUXN3Q1FZRFZRUUdFd0pWVXpFVApNQkVHQTFVRUNBd0tRMkZzYVdadmNtNXBZVEVSTUE4R0ExVUVCd3dJVTJGdUlFcHZjMlV4RHpBTkJnTlZCQW9NCkJrWTFJRVJsZGpFTU1Bb0dBMVVFQ3d3RFJHVjJNUlF3RWdZRFZRUUREQXNxTG1SbGRpNXNiMk5oYkRFZE1Cc0cKQ1NxR1NJYjNEUUVKQVJZT2RYTmxja0JrWlhZdWJHOWpZV3d3Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQgpEd0F3Z2dFS0FvSUJBUUN2empjUS90cE5UeDVtOVN4TlNzSlpraWEyejVNWllhSVZOMFNzOGt4a3JETzlTMGNxCkRYVWUybWhYa3drQlJsdjRzTVJGYnFtei80bW85UThvTFlnNHovVDRVWkFmMXN0S3BDaXNjanl1YmFJRmFyRkoKNnJJcTJYVm10clR3S2NOMEkxWHQrd0VWVUxZTDdPTWJkbDdaM1gra1RKSG5abjhkTW1NSm9TR2IxT2xWTk5hVAoxZEVyYWJJT3crR1lKTGNWV252ak9CaEhWMVFzYWwybGcweDVSdVQyaE81MTEzYmk2WUt3U3lVbklmbW5ZQmZYCkp4Tm94dVVjbDNsWmQxSlBDcFF3TnRTU1loZlh2OVNNZkZMZmcxM0poV0oyT05nNUxtb1NyanJwT1FlOEdMZUgKQitGeDdxV0F0WlpwNFpENXBYb0VKVXBLQzd4RXVxbC91TVhUQWdNQkFBR2pVekJSTUIwR0ExVWREZ1FXQkJTego0eWdoSWwvZ0JtaXlmNllyb1N5VTdYMWpSVEFmQmdOVkhTTUVHREFXZ0JTejR5Z2hJbC9nQm1peWY2WXJvU3lVCjdYMWpSVEFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTBHQ1NxR1NJYjNEUUVCQ3dVQUE0SUJBUUJJOGZCaW8yNGgKdmFNcmRQMktkSlB1R0RHc1BZQXNTUlhkZTFkM1IrYmxqZEZhVWhxaDFLQkJvL25rYklxZE80SG5qNmluWXZyYgpEUGZjeHVGWVdqUmdiUkpyak9wYjdRT3kySzVOYUtHQWp1eStJSi9YaUtieC9ncGhZcHhpRWErQ1crSTV0QUd4CjVYR25OZ0lveHIxZmhWa240dlZKSC8rTGx4M3RObHdVdCtpTHZwTWZiYU5qdytLb3pyMFFTbG8wUTBuSDhQdnEKeXVSa0dMMm1WVVBOd2VZR3Q5ZHlRQlFMQ0VLVzIrNzV4NGVMTzVJdmpGYUR6eWc0SkljcS9YMlhpQXljQTBEagp1QUMzTUtpMTFReURNQWI1czFvZytuSzVUQzZGeVgwWlZwREhwblA3d3Z3MW1OT1VwQWdubzIxSmlIbWJuZENWCndwbXcvRU5FN2U0SQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRQ3Z6amNRL3RwTlR4NW0KOVN4TlNzSlpraWEyejVNWllhSVZOMFNzOGt4a3JETzlTMGNxRFhVZTJtaFhrd2tCUmx2NHNNUkZicW16LzRtbwo5UThvTFlnNHovVDRVWkFmMXN0S3BDaXNjanl1YmFJRmFyRko2cklxMlhWbXRyVHdLY04wSTFYdCt3RVZVTFlMCjdPTWJkbDdaM1gra1RKSG5abjhkTW1NSm9TR2IxT2xWTk5hVDFkRXJhYklPdytHWUpMY1ZXbnZqT0JoSFYxUXMKYWwybGcweDVSdVQyaE81MTEzYmk2WUt3U3lVbklmbW5ZQmZYSnhOb3h1VWNsM2xaZDFKUENwUXdOdFNTWWhmWAp2OVNNZkZMZmcxM0poV0oyT05nNUxtb1NyanJwT1FlOEdMZUhCK0Z4N3FXQXRaWnA0WkQ1cFhvRUpVcEtDN3hFCnVxbC91TVhUQWdNQkFBRUNnZ0VBR3lGNHJRdWFJVGtoczNqZG5vdE5lcE9MOFpxNkZENHF6RzhNT2FFUTVLNWwKM2xqRTF1VmZHdVQ3YjV4ZzFPSUlwU25wRFlxdm1pTElSSnRBL0xoK0g3KzBDZDJvZE1scDg3bSt1ZElpc1l2TwpFbHVZbUQ3UWJSTEVicGFwVGdZeFJDQ0VqU2FNZXhUS3dLOWlPRkE5cTJNNzVMS1pCNmJHaDNrZkFKTHR4QVdjCkVmeXhzN0dla1NUWm1BNEd3NTA0bERRMHhvZ0FncURoOEN1RGVwL2JyNCsxaHZBQVZmQ2YwUVJMNVROdmZabi8KYkpYYXVKWTc3QWNNa1FEbWtScVJ4NldIZHRDV2hJZ1Y5UXgyM2RjbWRkdS9reXhXbXNUOE1pakpMbCtZNVZidgpyTDdaY1VUbko5dzBTdy85NCtFS2pFenNhSnc1bGt0TE43UFBjMkEwYlFLQmdRRDN2d0d0U0lBMmw0N05uOWpNClZ5QU5MY2RTT1dYSFFHQTljM2t6NlZ4bUNNM2xuU2g1Wi9iMHdnSTR4R3N1RmtNNld6cXBjTkdjVnF0cFdnQVcKNHdGQWYwNzR0SDZuY3BmbnYxZ1d2UzRlVVl0TUtmNFA0TGtSK1BiSGVOdC9JVU5HZ1lrT25ReHpGUHhxOThOcQpLNkE5RFNPcXpXUlh2dXpyTksyeUVqTlU1UUtCZ1FDMXFhTUxITnFLRTNSTEIyWHRGSnJOK01BTG9Ra1lOUXMvCmUwenBHaEpRVWlmcHNmMXM1SUtOZUFsbUVvMHNiMTQzbUIzd2lzMEsyUElKZnk2MXQ3TDMrYWlKU2Jvb3Q0WDgKUHFxR1ZNUWZGd0szNkVCMWp0dFF6djVid3ZiOFoyVXVkalFwUGYzdlJpS2taQTh6MkIrZ2ZmWmgxUDd5dFIyagpyS1ZoM0FoOFZ3S0JnQkNJNlAyOXR3RHR3SlFzdFBWK1l4OCtETzJKOHljSFB1VWJEZDNQRjJHZitNMzRYVGt0CkhTaGN3blV6ZHN2T3BKSUNnTG5LVTlNUlhjTmNSR0ZDcVZTNnFuU2k1MGtadHRXNnlaQks5QWNGL2p3SkdYSEoKMTlCQlE0Y3dvOFdxWEtrYUFDRy9qWk1vdFdnV1BTNmExc2o4VllNU3pqMmsrbjhBTncrSmMyK1pBb0dBQXZNRwpHcUFWVERpVW9zTXovRzFoTmdiYjExUjkrVTZqS0J5d1d2aDVZNlJ4MFhGNlU5SkI3Rm9PalFHd0dSQ1Z6d0ZCCk95NkZ0YTlmL3BkNkFxbEExcFhQRHF1THdpMTRsMmZORFBGRFhkM1p4WEtYMlZEQWJzZHRpYi9Za3JCN0RBNFAKT3J3dTZ6dVFSR3I3ZERRR0QyejhHd3FDT1I2SHBLaWc1cjNUeFhFQ2dZRUEzTHZlT2FobzNuc2ttZ1I0Uyt4TApreFFNNjZNNXR1VTZjSEJGQzBkMmxiZDRLMFd1dXJqRDRoSHRMTXFxWFVjUFZWNDlkQkNHSnMxajdOKzlaUzlGCnBkRkNLVFd3M3BCQTNUd3d4VkdLcU93NkZuRkhiWjMycWNnWkRKdWdpYWIrdTRqemhrY1FMSGNIMlNkeEhQUE0KMFFSQ05XTXRDMGVFM0I1U0JmNzJkWDg9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-secrets
+  namespace: keycloak
+type: Opaque
+stringData:
+  KEYCLOAK_ADMIN: admin
+  KEYCLOAK_ADMIN_PASSWORD: admin
+##################################################################################################
+# CREATE PERSISTANTVOLUME - postgres
+##################################################################################################
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv
+  namespace: keycloak
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: "standard"
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: keycloak
+  labels:
+    app: postgres
+spec:
+  storageClassName: "standard"
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+##################################################################################################
+# CREATE POSTGRES DEPLOYMENT - postgres
+##################################################################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: keycloak
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - image: postgres:15.4
+        name: postgres
+        envFrom:
+          - secretRef:
+              name: postgres-creds
+        ports:
+        - containerPort: 5432
+          name: postgres
+        securityContext:
+          privileged: false
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+
+
+##################################################################################################
+# CREATE SERVICE - postgres
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: keycloak
+  labels:
+    app: postgres
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: postgres
+  type: ClusterIP
+
+
+
+##################################################################################################
+# CREATE KEYCLOAK DEPLOYMENT - keycloak
+##################################################################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+  namespace: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:22.0.3
+          args: ["start-dev"]
+          env:
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  key: KEYCLOAK_ADMIN
+                  name: keycloak-secrets
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: KEYCLOAK_ADMIN_PASSWORD
+                  name: keycloak-secrets
+            - name: KC_PROXY
+              value: "edge"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_METRICS_ENABLED
+              value: "true"
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "true"
+            - name: KC_LOG_LEVEL
+              value: INFO
+            - name: PROXY_ADDRESS_FORWARDING
+              value: "true"
+            - name: KC_DB
+              value: postgres
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: POSTGRES_DB
+            - name: KC_DB_URL
+              value: jdbc:postgresql://postgres/$(POSTGRES_DB)
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: POSTGRES_USER
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: POSTGRES_PASSWORD
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+##################################################################################################
+# CREATE Service - keycloak
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: keycloak
+

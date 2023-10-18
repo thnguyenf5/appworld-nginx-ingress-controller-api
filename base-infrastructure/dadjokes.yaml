@@ -1,0 +1,59 @@
+##################################################################################################
+# CREATE NAMESPACE - dadjokes
+##################################################################################################
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dadjokes
+---
+##################################################################################################
+# CREATE DEPLOYMENT - dadjokes
+##################################################################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dad-jokes
+  namespace: dadjokes
+spec:
+  selector:
+    matchLabels:
+      app: dad-jokes
+  template:
+    metadata:
+      labels:
+        app: dad-jokes
+    spec:
+      containers:
+      - image: yesinteractive/dadjokes
+        name: dad-jokes
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        ports:
+        - containerPort: 80
+          name: http
+##################################################################################################
+# CREATE SERVICE - dadjokes
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dad-jokes-svc
+  namespace: dadjokes
+  labels:
+    app: dad-jokes
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8100
+  selector:
+    app: dad-jokes

@@ -1,0 +1,24 @@
+##################################################################################################
+# CREATE VIRTUALSERVER - grafana
+##################################################################################################
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: grafana-vs
+  namespace: monitoring
+spec:
+  host: grafana.dev.local
+  tls:
+    secret: tls-monitoring-secret
+    redirect:
+      enable: true  #Redirect from http > https
+      code: 301
+  upstreams:
+  - name: grafana
+    service: kube-prometheus-stack-grafana
+    port: 80
+  routes:
+    - path: /
+      action:
+        pass: grafana
