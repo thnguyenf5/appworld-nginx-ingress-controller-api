@@ -5,12 +5,12 @@
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
-  name: dad-jokes
+  name: dad-jokes-virtualserver
   namespace: dadjokes
 spec:
-  host: dadjokes.f5.local
+  host: dadjokes-api.dev.local
   policies:
-  - name: jwt-policy-keycloakidp
+  - name: jwt-policy-keycloak
   upstreams:
   - name: dad-jokes
     service: dad-jokes-svc
