@@ -356,3 +356,4 @@ helm install --create-namespace --namespace crapi crapi . --values values.yaml
 
 ## misc commands
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout dev.local.key -out dev.local.crt
+kubectl exec -it <pod> -n <namepace> -- /bin/sh

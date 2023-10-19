@@ -170,6 +170,8 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:22.0.3
           args: ["start-dev"]
+         #args: ["start-dev", "--log-level=ERROR", "--log=file"]
+         #default container log file path - /opt/keycloak/data/log/keycloak.log 
           env:
             - name: KEYCLOAK_ADMIN
               valueFrom:

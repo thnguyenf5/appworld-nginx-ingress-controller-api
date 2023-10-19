@@ -211,7 +211,7 @@ Client type – OpenID Connect.
 
 ![createclient2](image2.png)
 
-1. On the login settings page, add a wildcard to the valid redirect URLs and click Save.
+1. On the login settings page, add https://cafe.dev.local:443/_codexch to the valid redirect URLs and click Save.  This will allow for the cafe webapp to redirect to Keycloak for the user login process.
 
 ![createclient3](image3.png)
 
@@ -286,7 +286,7 @@ curl -X GET \
 We had to make some changes to the tokenEndpoint and jwksURI to reference the internal K8s DNS name.  
 
 In our enviornment you can use Postman and create a Get request to the following URL.  Note: we are using the master realm in our lab. 
-https://keycloak.example.com/realms/master/.well-known/openid-configuration
+https://keycloak.dev.local/realms/master/.well-known/openid-configuration
 
 
 # Section 5 - Update Load Balancing
@@ -386,3 +386,4 @@ https://www.keycloak.org/docs/latest/authorization_services/index.html
 
 For more information, please visit our github: 
 https://github.com/nginxinc/kubernetes-ingress/blob/v3.3.1/examples/custom-resources/oidc/README.md
+https://docs.nginx.com/nginx/deployment-guides/single-sign-on/keycloak/#configuring-keycloak 
