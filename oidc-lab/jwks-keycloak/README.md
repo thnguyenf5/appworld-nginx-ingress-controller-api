@@ -1,4 +1,4 @@
-# JWKS LAB
+# JWKS LAB GUIDE
 In this lab, we update an existing API to enforce additional security by applying a JWT policy.
 
 Instead of using a local secret to verify the client request such as in the previous lab, we will define an external Identity Provider (IdP) using the `JwksURI` field.
@@ -28,8 +28,9 @@ To set up Keycloak:
 
 
 # Section 2 - Deploy JWT Policy for dadjokesapi
-1. In your K8s environment, create a policy with the name jwt-policy-keycloak and configure the JwksURI field so that it only permits requests to our web application that contain a valid JWT. In the example policy below, replace <your_realm> we are working in. We used master as our realm name. The value of spec.jwt.token is set to $http_token in this example as we are sending the client token in an HTTP header.
+1. In your K8s environment as user01, create a policy with the name jwt-policy-keycloak and configure the JwksURI field so that it only permits requests to our web application that contain a valid JWT. In the example policy below, replace <your_realm> we are working in. We used master as our realm name. The value of spec.jwt.token is set to $http_token in this example as we are sending the client token in an HTTP header.
 ```
+su - user01
 cd /home/user01/oidc-lab/jwks-keycloak
 nano jwt-keycloak-policy.yaml
 ```

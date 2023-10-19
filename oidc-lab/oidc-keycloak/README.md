@@ -1,4 +1,4 @@
-# OIDC LAB
+# OIDC LAB GUIDE
 In this example, we we update an existing web application with additional security protection by using an OpenID Connect policy and [Keycloak](https://www.keycloak.org/).
 
 # Section 1 - Update Ingress Controller
@@ -9,9 +9,10 @@ To customize the NGINX OpenID Connect Reference implementation, you will need to
 
 
 1. Creating the ConfigMap.
-Run the below command to generate a ConfigMap with the contents of the oidc.conf file. NOTE The ConfigMap must be deployed in the same namespace as the F5 NGINX Ingress Controller.
+From the K8s environment as user 01, run the below command to generate a ConfigMap with the contents of the oidc.conf file. NOTE The ConfigMap must be deployed in the same namespace as the F5 NGINX Ingress Controller.
 
 ```
+su - user01
 kubectl create configmap oidc-config-map --from-literal=oidc.conf="$(curl -k https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v3.3.1/internal/configs/oidc/oidc.conf)" -n nginx-ingress
 
 ```
@@ -39,7 +40,7 @@ kubectl delete deployment nginx-ingress -n nginx-ingress
 Create a new deployment manifest to add the oidc volume and volume mount.  
 
 ```
-mkdir /home/user01/oidc-lab/oidc-keycloak
+
 cd /home/user01/oidc-lab/oidc-keycloak
 nano nginx-plus-oidc-ingress.yaml
 ```
