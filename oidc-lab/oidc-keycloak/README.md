@@ -233,7 +233,9 @@ Client type – OpenID Connect.
 
 # Section 3 - Deploy the Client Secret
 
-1. Encode the secret, obtained in the previous section. Go to the VSCode file where the secret was copied too.  Highlight the entire secret and right click.  You will see a base64 Encode option.  Proceed to encode the secret. (NOTE: Your VScode will need The F5 Extension and PowerShell extensions installed.)
+1. Encode the secret, obtained in the previous section. Go to the VSCode file where the secret was copied too.  You will need to encode this secret to base64.  
+
+###NOT WORKING### Highlight the entire secret and right click.  You will see a base64 Encode option.  Proceed to encode the secret. (NOTE: Your VScode will need The F5 Extension and PowerShell extensions installed.)
 
 ![base64pass](image7.png)
 
@@ -279,6 +281,10 @@ spec:
     scope: openid+profile+email
     accessTokenEnable: true
 ```
+``` 
+kubectl apply -f oidc-policy.yaml
+```
+
 1. Note these endpoints can be retrieved by doing a GET request to the keycloak authentication endpoints:
 curl -X GET \
   http://${host}:${port}/realms/${realm}/.well-known/openid-configuration 
@@ -293,7 +299,7 @@ https://keycloak.dev.local/realms/master/.well-known/openid-configuration
 1. Review the existing virtual server configuration for the cafe web app.  Note that there are no OIDC policies under the spec of the virtual server.
 
 ```
-kubectl describe virtual-server cafe-vs -n cafe
+kubectl describe virtualserver cafe-vs -n cafe
 ```
 2. Confirm access to the cafe web.  
 - Open Chrome/Firefox and click on the cafe bookmark.
