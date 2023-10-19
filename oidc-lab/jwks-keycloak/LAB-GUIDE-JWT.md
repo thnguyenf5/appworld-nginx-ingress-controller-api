@@ -1,16 +1,22 @@
-https://github.com/nginxinc/kubernetes-ingress/tree/v3.2.1/examples/custom-resources/jwks
+# JWKS LAB
+In this lab, we update an existing API to enforce additional security by applying a JWT policy.
+
+Instead of using a local secret to verify the client request such as in the previous lab, we will define an external Identity Provider (IdP) using the `JwksURI` field.
+
+We will be using a deployment of [KeyCloak](https://www.keycloak.org/) to work as our IdP in this example.
+In this example, KeyCloak is deployed as a single container in the K8s environment.  Upon completion of this lab, the NGINX+ Ingress Controller will now be providing JWT enforcement of the dadjokes API exposed to an outside client via a VirtualServer resource.
 
 # Section 1 - Configure Keycloak
 
 To set up Keycloak:
-1. To connect to Keycloak, from the RDP session, open a web browser and connect to `https://keycloak.dev.local`.  There are also bookmarks in chrome and firefox.
+1. To connect to Keycloak, from the RDP session, open a web browser and connect to `https://keycloak.dev.local`.  There are also bookmarks in chrome and firefox.  
 
-2. <Optional> Create a new Realm. We will use `jwks-example` for this example. This can be done by selecting the dropdown menu on the left and selecting `Create Realm`.  Otherwise stay in the master realm.
+2. Click on Administration Console and login with admin:admin.  Please note that we will be doing all of the work in the master realm.  
 
 3. Create a new Client called `jwks-client`. This can be done by selecting the `Client`s tab on the left and then selecting `Create client`.
    - When creating the Client, ensure both `Client authentication` and `Authorization` are enabled.
 
-4. Once the client is created, navigate to the `Credentials` tab for that client and copy the client SECRET into a notepad file.  This client SECRET will be utilized later for getting the client token.  
+4. Once the client is created, navigate to the `Credentials` tab for that client and copy the client SECRET into a vscode file.  This client SECRET will be utilized later for getting the client token.  
    - <Optional>
       This can be saved as a `SECRET` variable in Postman for later use.
 
@@ -22,8 +28,9 @@ To set up Keycloak:
 
 
 # Section 2 - Deploy JWT Policy for dadjokesapi
-1. Create a policy with the name jwt-policy-keycloak and configure the JwksURI field so that it only permits requests to our web application that contain a valid JWT. In the example policy below, replace <your_realm> with the realm created in Step 4. We used master as our realm name. The value of spec.jwt.token is set to $http_token in this example as we are sending the client token in an HTTP header.
+1. In your K8s environment, create a policy with the name jwt-policy-keycloak and configure the JwksURI field so that it only permits requests to our web application that contain a valid JWT. In the example policy below, replace <your_realm> we are working in. We used master as our realm name. The value of spec.jwt.token is set to $http_token in this example as we are sending the client token in an HTTP header.
 ```
+cd /home/user01/oidc-lab/jwks-keycloak
 nano jwt-keycloak-policy.yaml
 ```
 ``` yaml
@@ -65,9 +72,9 @@ In this example, we create a ConfigMap using Kubernetes' default DNS `kube-dns.k
 ```
 kubectl apply -f nginx-config.yaml
 ```
-## Section 3 - Configure Load Balancing
+## Section 3 - Update Load Balancing
 
-1. Review the existing virtual server configuration for the cafe web app.  Note that there are no JWT policies under the spec of the virtual server.
+1. Review the existing virtual server configuration for the dadjokes API.  Note that there are no JWT policies under the spec of the virtual server.
 
 ```
 kubectl describe virtual-server dad-jokes-virtualserver -n dadjokes
@@ -123,7 +130,7 @@ Note that the VirtualServer references the policy `jwt-policy-keycloak` created 
 
 https://keycloak.dev.local/realms/<your_realm>/protocol/openid-connect/token
 
-In the body of the post request you will need to setup the following key value pairs.  Note `SECRET` and `PASSWORD` should be saved in a notepad file or as a POSTMAN variable from a previous step.
+In the body of the post request you will need to setup the following key value pairs.  Note `SECRET` and `PASSWORD` should be saved in a vscode file or as a POSTMAN variable from a previous step.
 
 Key             Value
 grant_type      password
@@ -150,3 +157,7 @@ token           `ACCESS_TOKEN`
 
 You should now be able to successfully access the API.  NOTE: the access token in this environment will expire after a short time.  Try the GET request again in about 5 mins with your initial token and you will get a 401 response.  This means that the JWT has expired.  Repeat the previous steps of getting a new access token and updating your token value which should re-enable access.
 
+
+## Additional Information
+For more information, please visit our github.
+https://github.com/nginxinc/kubernetes-ingress/tree/v3.3.1/examples/custom-resources/jwks
