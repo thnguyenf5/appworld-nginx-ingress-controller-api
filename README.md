@@ -363,13 +363,13 @@ Note the PORTS for HTTP stream and HTTPS Stream
 
 
 ## troubleshooting NLK
-In my evironment currently, the NLK is not working.  Checking the logs below, there's an error message indicating that NLK cannot reach external N+ LB.  Will revisit in the future.
+In the environment, the NLK is currently not working.  Checking the logs below, there's an error message indicating that NLK cannot reach external N+ LB.  Will revisit in the future.
 
 ```
 kubectl -n nlk get pods | grep deployment | cut -f1 -d" "  | xargs kubectl logs -n nlk --follow $1
 ```
 
-From the microK8s host, I ran the following commands:
+From the microK8s host, I ran the following commands to get external LB working:
 
 To confirm connectivitity:
 ```
@@ -388,6 +388,8 @@ curl -X POST -d '{"server": "10.1.10.6:31674"}' -s 'http://10.1.10.5:9000/api/9/
 
 # Install Base infrastructure
 cd /home/user01/base-infrastructure
+
+These manifiests from https://github.com/thnguyenf5/appworld-nginx-ingress-controller-api/tree/main/base-infrastructure
 
 ## install cafe app
 kubectl apply -f cafe.yaml
@@ -414,7 +416,9 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 
 helm repo update
 
+```
 helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --set=alertmanager.persistentVolume.existingClaim=kube-prometheus-stack-pvc,server.persistentVolume.existingClaim=kube-prometheus-stack-pvc,grafana.persistentVolume.existingClaim=kube-prometheus-stack-pvc,serviceMonitorSelectorNilUsesHelmValues=false,podMonitorSelectorNilUsesHelmValues=false
+```
 
 kubectl apply -f prometheus-vs.yaml 
 
