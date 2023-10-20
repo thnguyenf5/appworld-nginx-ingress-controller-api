@@ -10,7 +10,7 @@ metadata:
 spec:
   host: cafe.dev.local
   policies:
-  - name: oidc-polcy
+  - name: oidc-policy
   tls:
     secret: cafe-secret
     redirect:

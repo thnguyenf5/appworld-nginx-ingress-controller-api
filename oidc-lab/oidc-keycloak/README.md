@@ -8,8 +8,8 @@ To customize the NGINX OpenID Connect Reference implementation, you will need to
 - Attach a Volume and VolumeMount to your deployment of the F5 NGINX Ingress Controller in order to mount the OIDC file to the NGINX+ Ingress pods.
 
 
-1. Creating the ConfigMap.
-From the K8s environment as user 01, run the below command to generate a ConfigMap with the contents of the oidc.conf file. NOTE The ConfigMap must be deployed in the same namespace as the F5 NGINX Ingress Controller.
+1. Creating the OIDC ConfigMap.
+From the K8s environment as user 01, run the below command to generate a OIDC ConfigMap with the contents of the oidc.conf file. NOTE The ConfigMap must be deployed in the same namespace as the F5 NGINX Ingress Controller.
 
 ```
 su - user01
@@ -35,7 +35,36 @@ kubectl describe deployment nginx-ingress -n nginx-ingress
 kubectl delete deployment nginx-ingress -n nginx-ingress
 ```
 
-4. In this step we will add a Volume and VolumeMount to the NGINX Ingress Controller deployment. This will allow you to mount the ConfigMap created earlier and overwrite the contents of the oidc.conf file.
+4. In this step we configure, the DNS resolver, so that an NGINX Plus can resolve the Keycloak endpoint.
+
+Get the cluster IP of the KubeDNS service:
+```
+kubectl -n kube-system get svc kube-dns
+```
+SAMPLE OUTPUT
+```
+NAME       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+kube-dns   ClusterIP   10.152.183.10   <none>        53/UDP,53/TCP,9153/TCP   2d2h
+```
+Create a new for the DNS resolver ConfigMap, replacing the location of <kube-dns-ip> with the IP obtained in the previous step.
+```
+nano nginx-config-resolver.yaml
+```
+``` yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+  namespace: nginx-ingress
+data:
+  resolver-addresses: <kube-dns-ip>
+  resolver-valid: 5s
+```
+```
+kubectl apply -f nginx-config-resolver.yaml
+```
+
+5. In this step we will add a Volume and VolumeMount to the NGINX Ingress Controller deployment. This will allow you to mount the ConfigMap created earlier and overwrite the contents of the oidc.conf file.  We also need to add  command line arguments in the manifest to enable oidc.
 
 Create a new deployment manifest to add the oidc volume and volume mount.  
 
@@ -158,6 +187,7 @@ spec:
          #- -external-service=nginx-ingress
           - -enable-prometheus-metrics
           - -enable-oidc
+          - -enable-snippets
          #- -enable-service-insight
          #- -global-configuration=$(POD_NAMESPACE)/nginx-configuration
 #      initContainers:
@@ -237,6 +267,8 @@ Client type – OpenID Connect.
 
 ###NOT WORKING### Highlight the entire secret and right click.  You will see a base64 Encode option.  Proceed to encode the secret. (NOTE: Your VScode will need The F5 Extension and PowerShell extensions installed.)
 
+VS Code not working - you can utilize a website to copy the SECRET and get it base64 encoded.  https://www.base64encode.org/
+
 ![base64pass](image7.png)
 
 1. In your K8s environment, you will then create a client-secret.  Create client-secret.yaml, replacing <insert-secret-here>  with the base64 encoded secret.
@@ -250,6 +282,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: oidc-secret
+  namespace: cafe
 type: nginx.org/oidc
 data:
   client-secret: <insert-secret-here>
@@ -323,7 +356,7 @@ metadata:
 spec:
   host: cafe.dev.local
   policies:
-  - name: oidc-polcy
+  - name: oidc-policy
   tls:
     secret: cafe-secret
     redirect:
@@ -374,8 +407,10 @@ spec:
 ```
 kubectl apply -f cafe-vs-oidc.yaml
 ```
+## Section 6 - Configure DNS Resolver
 
-## Section 6 - Validate and Test
+
+## Section 7 - Validate and Test
 
 1. Open a new ingonito/private browser and Confirm access to the cafe web app.  You should now be redirected to Keycloak login page.  
 
