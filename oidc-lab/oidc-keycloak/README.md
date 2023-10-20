@@ -13,6 +13,8 @@ From the K8s environment as user 01, run the below command to generate a OIDC Co
 
 ```
 su - user01
+```
+```
 kubectl create configmap oidc-config-map --from-literal=oidc.conf="$(curl -k https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v3.3.1/internal/configs/oidc/oidc.conf)" -n nginx-ingress
 
 ```
@@ -48,6 +50,9 @@ kube-dns   ClusterIP   10.152.183.10   <none>        53/UDP,53/TCP,9153/TCP   2d
 ```
 Create a new for the DNS resolver ConfigMap, replacing the location of <kube-dns-ip> with the IP obtained in the previous step.
 ```
+cd /home/user01/oidc-lab/oidc-keycloak
+```
+```
 nano nginx-config-resolver.yaml
 ```
 ``` yaml
@@ -69,8 +74,6 @@ kubectl apply -f nginx-config-resolver.yaml
 Create a new deployment manifest to add the oidc volume and volume mount.  
 
 ```
-
-cd /home/user01/oidc-lab/oidc-keycloak
 nano nginx-plus-oidc-ingress.yaml
 ```
 
@@ -187,7 +190,6 @@ spec:
          #- -external-service=nginx-ingress
           - -enable-prometheus-metrics
           - -enable-oidc
-          - -enable-snippets
          #- -enable-service-insight
          #- -global-configuration=$(POD_NAMESPACE)/nginx-configuration
 #      initContainers:
@@ -407,10 +409,9 @@ spec:
 ```
 kubectl apply -f cafe-vs-oidc.yaml
 ```
-## Section 6 - Configure DNS Resolver
 
 
-## Section 7 - Validate and Test
+## Section 6 - Validate and Test
 
 1. Open a new ingonito/private browser and Confirm access to the cafe web app.  You should now be redirected to Keycloak login page.  
 
