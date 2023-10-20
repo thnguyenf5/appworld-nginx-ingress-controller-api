@@ -11,16 +11,51 @@ Update localhost file - run notepad as adminstrator
 Install NGINX+
 
 adduser user01
+
 usermod -aG sudo user01
+
+su - user01
+
+git clone https://github.com/nginxinc/nginx-loadbalancer-kubernetes.git
+
+Backup existing NGINX .conf files
+
+```
+sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.orig
+sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
+```
+
+Copy the NLK files over to the /etc/nginx/
+
+
+```
+sudo mkdir /etc/nginx/stream
+sudo cp nginx-loadbalancer-kubernetes/docs/tcp/default-tcp.conf /etc/nginx/conf.d/default-tcp.conf 
+sudo cp nginx-loadbalancer-kubernetes/docs/tcp/dashboard.conf /etc/nginx/conf.d/dashboard.conf 
+sudo cp nginx-loadbalancer-kubernetes/docs/tcp/nginxk8slb.conf /etc/nginx/stream/nginxk8slb.conf
+```
+
+Validate nginx config and reload
+
+```
+nginx -t
+
+systemctl restart nginx
+```
+
 
 # Docker Host
 
 
 ## Add Docker's official GPG key:
 sudo apt-get update
+
 sudo apt-get install ca-certificates curl gnupg
+
 sudo install -m 0755 -d /etc/apt/keyrings
+
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 # Add the repository to Apt sources:
@@ -35,10 +70,12 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 
 adduser user01
+
 usermod -aG sudo user01
 
 
 sudo adduser user01 docker
+
 newgrp docker
 
 
@@ -51,26 +88,36 @@ https://ubuntu.com/tutorials/install-a-local-kubernetes-with-microk8s#2-deployin
 
 
 sudo snap install microk8s --classic
+
 sudo ufw allow in on cni0 && sudo ufw allow out on cni0
+
 sudo ufw default allow routed
 
 sudo microk8s enable dns 
+
 sudo microk8s enable dashboard
+
 sudo microk8s enable storage
+
 
 ## helm install
 sudo snap install helm --classic
 
 ## kubectl install
 sudo snap install kubectl --classic
+
 adduser user01
+
 usermod -aG sudo user01
+
 su - user01
 
 sudo microk8s config
 
 mkdir .kube
+
 cd .kube
+
 sudo microk8s config > config
 
 
@@ -114,7 +161,9 @@ kubectl apply -f common/crds/appprotect.f5.com_appolicies.yaml
 
 kubectl apply -f common/crds/appprotect.f5.com_apusersigs.yaml
 
-# nginx-plus JWT secret
+# nginx-plus JWT secret 
+- pull N+ JWT token from myf5.com account
+
 kubectl create secret docker-registry regcred --docker-server=private-registry.nginx.com kubectl create secret docker-registry regcred --docker-server=private-registry.nginx.com --docker-username=e..........Dy--docker-password=none -n nginx-ingress
 
 ## deployment ingress
@@ -242,6 +291,7 @@ spec:
 #        - mountPath: /mnt/etc
 #          name: nginx-etc
 ```
+Deploy NGINX+ Ingress Controller with App Protect and Prometheus metrics
 
 kubectl apply -f deployment/nginx-plus-ingress.yaml
 
@@ -303,13 +353,34 @@ spec:
 ```
 
 kubectl apply -f docs/tcp/loadbalancer-nlk.yaml
+
+```
+kubectl get svc nginx-ingress -n nginx-ingress
+```
+Note the PORTS for HTTP stream and HTTPS Stream
+
+
 ## troubleshooting NLK
+In my evironment currently, the NLK is not working.  Checking the logs below, there's an error message indicating that NLK cannot reach external N+ LB.  Will revisit in the future.
+
+```
+kubectl -n nlk get pods | grep deployment | cut -f1 -d" "  | xargs kubectl logs -n nlk --follow $1
+```
+
+From the microK8s host, I ran the following commands:
+
+To confirm connectivitity:
+```
 curl -X GET -s 'http://10.1.10.5:9000/api/9/stream/upstreams/'
+```
+I order to get the external LB working, utilize the N+ API to update stream servers. Be sure to match it with the ports identified in the nginx-ingress service type load balancer.
 
+```
 curl -X POST -d '{"server": "10.1.10.6:30564"}' -s 'http://10.1.10.5:9000/api/9/stream/upstreams/nginx-lb-http/servers'
-
+```
+```
 curl -X POST -d '{"server": "10.1.10.6:31674"}' -s 'http://10.1.10.5:9000/api/9/stream/upstreams/nginx-lb-https/servers'
-
+```
 
 
 
@@ -318,14 +389,17 @@ cd /home/user01/base-infrastructure
 
 ## install cafe app
 kubectl apply -f cafe.yaml
+
 kubectl apply -f cafe-vs.yaml
 
 ## install dadjokes api
 kubectl apply -f dadjokes.yaml
+
 kubectl apply -f dadjokes-vs.yaml
 
 ## install keycloak
 kubectl apply -f keycloak.yaml
+
 kubectl apply -f keycloak-vs.yaml
 
 ## configure monitoring persistant storage
@@ -341,6 +415,7 @@ helm repo update
 helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --set=alertmanager.persistentVolume.existingClaim=kube-prometheus-stack-pvc,server.persistentVolume.existingClaim=kube-prometheus-stack-pvc,grafana.persistentVolume.existingClaim=kube-prometheus-stack-pvc,serviceMonitorSelectorNilUsesHelmValues=false,podMonitorSelectorNilUsesHelmValues=false
 
 kubectl apply -f prometheus-vs.yaml 
+
 kubectl apply -f grafana-vs.yaml
 
 
@@ -356,4 +431,5 @@ helm install --create-namespace --namespace crapi crapi . --values values.yaml
 
 ## misc commands
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout dev.local.key -out dev.local.crt
+
 kubectl exec -it <pod> -n <namepace> -- /bin/sh
