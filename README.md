@@ -301,6 +301,7 @@ kubectl apply -f deployment/nginx-plus-ingress.yaml
 
 
 ## deploy cafe demo app
+mkdir /home/user01/base-infrastructure
 cd /home/user01/base-infrastructure
 kubectl apply -f cafe.yaml
 kubectl apply -f cafe-vs.yaml
