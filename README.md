@@ -327,6 +327,8 @@ metadata:
 ```
 kubectl apply -f deployments/deployment/namespace.yaml
 
+./deployments/rbac/apply.sh
+
 kubectl apply -f deployments/deployment/configmap.yaml
 
 kubectl apply -f deployments/deployment/deployment.yaml
