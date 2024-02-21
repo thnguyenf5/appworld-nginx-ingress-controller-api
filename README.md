@@ -300,18 +300,17 @@ Deploy NGINX+ Ingress Controller with App Protect and Prometheus metrics
 kubectl apply -f deployment/nginx-plus-ingress.yaml
 
 
-## deploy cafe demo app
-mkdir /home/user01/base-infrastructure
-cd /home/user01/base-infrastructure
-kubectl apply -f cafe.yaml
-kubectl apply -f cafe-vs.yaml
 
 ## deploy NLK
 mkdir /home/user01/nlk
+
 cd /home/user01/nlk
+
 git clone https://github.com/nginxinc/nginx-loadbalancer-kubernetes.git
 
 You will need to modify the following configmap file to update with the IP address of your external NGINX LB.
+
+cd nginx-loadbalancer-kubernetes
 
 nano deployments/deployment/configmap.yaml
 
@@ -326,8 +325,10 @@ metadata:
   namespace: nlk
 
 ```
+kubectl apply -f deployments/deployment/namespace.yaml
 
 kubectl apply -f deployments/deployment/configmap.yaml
+
 kubectl apply -f deployments/deployment/deployment.yaml
 
 You will then need to update the following file:
