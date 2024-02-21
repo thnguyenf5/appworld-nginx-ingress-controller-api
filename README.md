@@ -129,6 +129,8 @@ kubectl get all --all-namespaces
 ## nginx+ ingress controller
 mkdir /home/user01/nic
 
+cd /home/user01/nic
+
 git clone https://github.com/nginxinc/kubernetes-ingress.git --branch v3.3.1
 
 cd kubernetes-ingress/deployments
