@@ -127,7 +127,7 @@ sudo microk8s config > config
 kubectl get all --all-namespaces
 
 ## nginx+ ingress controller
-mkdir nic
+mkdir /home/user01/nic
 
 git clone https://github.com/nginxinc/kubernetes-ingress.git --branch v3.3.1
 
@@ -166,7 +166,7 @@ kubectl apply -f common/crds/appprotect.f5.com_apusersigs.yaml
 # nginx-plus JWT secret 
 - pull N+ JWT token from myf5.com account
 
-kubectl create secret docker-registry regcred --docker-server=private-registry.nginx.com kubectl create secret docker-registry regcred --docker-server=private-registry.nginx.com --docker-username=e..........Dy--docker-password=none -n nginx-ingress
+kubectl create secret docker-registry regcred --docker-server=private-registry.nginx.com kubectl create secret docker-registry regcred --docker-server=private-registry.nginx.com --docker-username=e.......... --docker-password=none -n nginx-ingress
 
 ## deployment ingress
 ```yaml
@@ -299,11 +299,18 @@ kubectl apply -f deployment/nginx-plus-ingress.yaml
 
 
 ## deploy cafe demo app
-cd /home/ubuntu/base-infrastructure
+cd /home/user01/base-infrastructure
 kubectl apply -f cafe.yaml
 kubectl apply -f cafe-vs.yaml
 
 ## deploy NLK
+mkdir /home/user01/nlk
+cd /home/user01/nlk
+git clone https://github.com/nginxinc/nginx-loadbalancer-kubernetes.git
+
+You will need to modify the following configmap file to update with the IP address of your external NGINX LB.
+
+nano deployments/deployment/configmap.yaml
 
 ``` yaml                                                                        
 apiVersion: v1
@@ -319,6 +326,8 @@ metadata:
 
 kubectl apply -f deployments/deployment/configmap.yaml
 kubectl apply -f deployments/deployment/deployment.yaml
+
+You will then need to update the following file:
 
 nano docs/tcp/loadbalancer-nlk.yaml
 
@@ -357,9 +366,10 @@ spec:
 kubectl apply -f docs/tcp/loadbalancer-nlk.yaml
 
 ```
-kubectl get svc nginx-ingress -n nginx-ingress
+
 ```
-Note the PORTS for HTTP stream and HTTPS Stream
+You will then need to get the PORTS for HTTP stream and HTTPS Stream
+kubectl get svc nginx-ingress -n nginx-ingress
 
 
 ## troubleshooting NLK
