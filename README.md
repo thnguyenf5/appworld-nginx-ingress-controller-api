@@ -30,7 +30,8 @@ Copy the NLK files over to the /etc/nginx/
 
 ```
 sudo mkdir /etc/nginx/stream
-sudo cp nginx-loadbalancer-kubernetes/docs/tcp/default-tcp.conf /etc/nginx/conf.d/default-tcp.conf 
+sudo cp nginx-loadbalancer-kubernetes/docs/tcp/default-tcp.conf /etc/nginx/conf.d/default-tcp.conf
+sudo cp nginx-loadbalancer-kubernetes/docs/tcp/nginx.conf /etc/nginx/nginx.conf
 sudo cp nginx-loadbalancer-kubernetes/docs/tcp/dashboard.conf /etc/nginx/conf.d/dashboard.conf 
 sudo cp nginx-loadbalancer-kubernetes/docs/tcp/nginxk8slb.conf /etc/nginx/stream/nginxk8slb.conf
 ```
@@ -333,7 +334,7 @@ kubectl apply -f deployments/deployment/configmap.yaml
 
 kubectl apply -f deployments/deployment/deployment.yaml
 
-You will then need to update the following file:
+You will then need to update the following file.  The ExternalIP section will need to be updated in order to match your IP of external NGINX LB
 
 nano docs/tcp/loadbalancer-nlk.yaml
 
@@ -371,10 +372,9 @@ spec:
 
 kubectl apply -f docs/tcp/loadbalancer-nlk.yaml
 
-```
 
-```
 You will then need to get the PORTS for HTTP stream and HTTPS Stream
+
 kubectl get svc nginx-ingress -n nginx-ingress
 
 
@@ -403,6 +403,9 @@ curl -X POST -d '{"server": "10.1.10.6:31674"}' -s 'http://10.1.10.5:9000/api/9/
 
 
 # Install Base infrastructure
+
+mkdir /home/user01/base-infrastructure 
+
 cd /home/user01/base-infrastructure
 
 These manifiests from https://github.com/thnguyenf5/appworld-nginx-ingress-controller-api/tree/main/base-infrastructure
