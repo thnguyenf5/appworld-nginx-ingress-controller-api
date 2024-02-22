@@ -1,0 +1,60 @@
+##################################################################################################
+# REDEPLOY CRAPI SERVICE - WEB
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: crapi
+    meta.helm.sh/release-namespace: crapi
+  labels:
+    app: crapi-web
+    app.kubernetes.io/managed-by: Helm
+    release: crapi
+  name: crapi-web
+  namespace: crapi
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: nginx
+    nodePort: 30080
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: nginx-ssl
+    nodePort: 30443
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    app: crapi-web
+    
+##################################################################################################
+# REDEPLOY CRAPI SERVICE - WebMail
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: crapi
+    meta.helm.sh/release-namespace: crapi
+  labels:
+    app: mailhog
+    app.kubernetes.io/managed-by: Helm
+    release: crapi
+  name: mailhog-web
+  namespace: crapi
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: web
+    nodePort: 30025
+    port: 8025
+    protocol: TCP
+    targetPort: 8025
+  selector:
+    app: mailhog
