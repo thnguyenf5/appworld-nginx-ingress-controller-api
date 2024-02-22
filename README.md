@@ -132,7 +132,7 @@ mkdir /home/user01/nic
 
 cd /home/user01/nic
 
-git clone https://github.com/nginxinc/kubernetes-ingress.git 
+git clone https://github.com/nginxinc/kubernetes-ingress.git --branch 3.4.3
 
 cd kubernetes-ingress
 
@@ -284,135 +284,12 @@ spec:
 #        - mountPath: /mnt/etc
 #          name: nginx-etc
 ```
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-ingress
-  namespace: nginx-ingress
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nginx-ingress
-  template:
-    metadata:
-      labels:
-        app: nginx-ingress
-        app.kubernetes.io/name: nginx-ingress
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9113"
-        prometheus.io/scheme: http
-    spec:
-      serviceAccountName: nginx-ingress
-      imagePullSecrets:
-      - name: regcred
-      automountServiceAccountToken: true
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
-#      volumes:
-#      - name: nginx-etc
-#        emptyDir: {}
-#      - name: nginx-cache
-#        emptyDir: {}
-#      - name: nginx-lib
-#        emptyDir: {}
-#      - name: nginx-log
-#        emptyDir: {}
-      containers:
-      - image: private-registry.nginx.com/nginx-ic-nap/nginx-plus-ingress:3.3.1
-        imagePullPolicy: IfNotPresent
-        name: nginx-plus-ingress
-        ports:
-        - name: http
-          containerPort: 80
-        - name: https
-          containerPort: 443
-        - name: readiness-port
-          containerPort: 8081
-        - name: prometheus
-          containerPort: 9113
-        - name: service-insight
-          containerPort: 9114
-        readinessProbe:
-          httpGet:
-            path: /nginx-ready
-            port: readiness-port
-          periodSeconds: 1
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "1"
-            memory: "1Gi"
-        securityContext:
-          allowPrivilegeEscalation: false
-#          readOnlyRootFilesystem: true
-          runAsUser: 101 #nginx
-          runAsNonRoot: true
-          capabilities:
-            drop:
-            - ALL
-            add:
-            - NET_BIND_SERVICE
-#        volumeMounts:
-#        - mountPath: /etc/nginx
-#          name: nginx-etc
-#        - mountPath: /var/cache/nginx
-#          name: nginx-cache
-#        - mountPath: /var/lib/nginx
-#          name: nginx-lib
-#        - mountPath: /var/log/nginx
-#          name: nginx-log
-        env:
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        args:
-          - -nginx-plus
-          - -nginx-configmaps=$(POD_NAMESPACE)/nginx-config
-         #- -default-server-tls-secret=$(POD_NAMESPACE)/default-server-secret
-         #- -include-year
-         #- -enable-cert-manager
-         #- -enable-external-dns
-          - -enable-app-protect
-         #- -enable-app-protect-dos
-         #- -v=3 # Enables extensive logging. Useful for troubleshooting.
-         #- -report-ingress-status
-         #- -external-service=nginx-ingress
-          - -enable-prometheus-metrics
-         #- -enable-service-insight
-         #- -global-configuration=$(POD_NAMESPACE)/nginx-configuration
-#      initContainers:
-#      - image: nginx/nginx-ingress:3.3.1
-#        imagePullPolicy: IfNotPresent
-#        name: init-nginx-ingress
-#        command: ['cp', '-vdR', '/etc/nginx/.', '/mnt/etc']
-#        securityContext:
-#          allowPrivilegeEscalation: false
-#          readOnlyRootFilesystem: true
-#          runAsUser: 101 #nginx
-#          runAsNonRoot: true
-#          capabilities:
-#            drop:
-#            - ALL
-#        volumeMounts:
-#        - mountPath: /mnt/etc
-#          name: nginx-etc
-```
+
 Deploy NGINX+ Ingress Controller with App Protect and Prometheus metrics
 
 kubectl apply -f deployment/nginx-plus-ingress.yaml
 
-
+kubectl get pods --namespace=nginx-ingress
 
 ## deploy NLK
 mkdir /home/user01/nlk
@@ -431,12 +308,14 @@ nano deployments/deployment/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 data:
-  nginx-hosts:
-    "http://10.1.10.5:9000/api"
+  nginx-hosts: "https://10.0.0.1:9000/api"
+  tls-mode: "no-tls"
+  ca-certificate: ""
+  client-certificate: ""
+  log-level: "warn"
 metadata:
   name: nlk-config
   namespace: nlk
-
 ```
 kubectl apply -f deployments/deployment/namespace.yaml
 
