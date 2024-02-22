@@ -418,8 +418,7 @@ kubectl apply -f keycloak-vs.yaml
 
 ## configure monitoring persistant storage
 kubectl apply -f monitoring.yaml
-## create nginx prometheus service and service monitor
-kubectl apply -f nginx-ingress-metrics-prometheus.yaml
+
 ## install kube prometheus stack
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -434,10 +433,13 @@ kubectl apply -f prometheus-vs.yaml
 
 kubectl apply -f grafana-vs.yaml
 
+GET NAME of GRAFANA POD
+kubectl get pods -n monitoring
 
-kubectl exec --namespace monitoring -it kube-prometheus-stack-grafana-855dcd954b-8ft57 grafana-cli admin reset-admin-password appworld
+kubectl exec --namespace monitoring -it kube-prometheus-stack-grafana-855dcd954b-8ft57 grafana-cli admin reset-admin-password <PASSWORD>
 
-
+## create nginx prometheus service and service monitor
+kubectl apply -f nginx-ingress-metrics-prometheus.yaml
 
 
 
