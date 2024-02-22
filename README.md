@@ -446,8 +446,11 @@ kubectl apply -f nginx-ingress-metrics-prometheus.yaml
 ## setup grafana
 Login into Grafana at grafana.dev.local 
 admin:<PASSWORD>
-Add Data Source
-Prometheus URL - 
+Prometheus Data Source already added
+
+Click to add new dashboard
+Import a dashboard
+https://github.com/nginxinc/kubernetes-ingress/blob/main/grafana/NGINXPlusICDashboard.json
 
 
 ## crapi
