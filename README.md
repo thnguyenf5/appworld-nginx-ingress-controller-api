@@ -2,9 +2,11 @@
 
 # Windows:
 Install Firefox
-Install Chrome
-Install VS Code
-Install Postman
+
+Install VS Code 
+
+Install Postman - https://dl.pstmn.io/download/version/9.31.30/win64
+
 Update localhost file - run notepad as adminstrator
 
 # NGINX External LB
