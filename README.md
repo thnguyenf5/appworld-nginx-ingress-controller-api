@@ -443,6 +443,11 @@ kubectl exec --namespace monitoring -it kube-prometheus-stack-grafana-855dcd954b
 ## create nginx prometheus service and service monitor
 kubectl apply -f nginx-ingress-metrics-prometheus.yaml
 
+## setup grafana
+Login into Grafana at grafana.dev.local 
+admin:<PASSWORD>
+Add Data Source
+Prometheus URL - 
 
 
 ## crapi
