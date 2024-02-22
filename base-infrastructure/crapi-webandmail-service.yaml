@@ -19,15 +19,11 @@ spec:
   clusterIP: None
   ports:
   - name: nginx
-    nodePort: 30080
     port: 80
     protocol: TCP
-    targetPort: 80
   - name: nginx-ssl
-    nodePort: 30443
     port: 443
     protocol: TCP
-    targetPort: 443
   selector:
     app: crapi-web
     
@@ -52,9 +48,7 @@ spec:
   clusterIP: None
   ports:
   - name: web
-    nodePort: 30025
     port: 8025
     protocol: TCP
-    targetPort: 8025
   selector:
     app: mailhog
