@@ -20,16 +20,16 @@ data:
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
-  name: crapi-web-vs-https
+  name: crapi-web-vs-http
   namespace: crapi
 spec:
   host: mypremiumdealership.dev.local
-  tls:
-    secret: crapi-secret
+  #tls:
+    #secret: crapi-secret
   upstreams:
   - name: crapi-web
     service: crapi-web
-    port: 443
+    port: 80
   routes:
     - path: /
       action:
