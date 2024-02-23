@@ -454,7 +454,94 @@ https://github.com/nginxinc/kubernetes-ingress/blob/main/grafana/NGINXPlusICDash
 
 
 ## crapi
+
+
+cd /home/user01/
+
+git clone https://github.com/OWASP/crAPI.git
+
+cd /home/user01/crAPI/deploy/helm
+
 helm install --create-namespace --namespace crapi crapi . --values values.yaml
+
+kubectl get all -n crapi
+
+
+cd /home/user01/base-infrastructure/
+
+kubectl delete service crapi-web -n crapi
+
+kubectl delete service mailhog-web -n crapi
+
+kubectl apply -f crapi-webandmail-service.yaml
+
+```yaml
+##################################################################################################
+# REDEPLOY CRAPI SERVICE - WEB
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: crapi
+    meta.helm.sh/release-namespace: crapi
+  labels:
+    app: crapi-web
+    app.kubernetes.io/managed-by: Helm
+    release: crapi
+  name: crapi-web
+  namespace: crapi
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: nginx
+    port: 80
+    protocol: TCP
+  - name: nginx-ssl
+    port: 443
+    protocol: TCP
+  selector:
+    app: crapi-web
+    
+##################################################################################################
+# REDEPLOY CRAPI SERVICE - WebMail
+##################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: crapi
+    meta.helm.sh/release-namespace: crapi
+  labels:
+    app: mailhog
+    app.kubernetes.io/managed-by: Helm
+    release: crapi
+  name: mailhog-web
+  namespace: crapi
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: web
+    port: 8025
+    protocol: TCP
+  selector:
+    app: mailhog
+```
+
+kubectl apply -f crapi-web-vs.yaml 
+
+kubectl get all -n crapi
+
+
+## NJS Testing - routing to different upstreams based on BODY from POST Request
+
+
+
+
 
 
 ## misc commands
