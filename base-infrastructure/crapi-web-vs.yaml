@@ -26,9 +26,6 @@ spec:
   host: mypremiumdealership.dev.local
   tls:
     secret: crapi-secret
-    redirect:
-      enable: true  #Redirect from http > https
-      code: 301
   upstreams:
   - name: crapi-web
     service: crapi-web
