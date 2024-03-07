@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx-exporter
+  name: nginx-prometheus-metrics
+  namespace: nginx-ingress
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9113
+      targetPort: 9113
+      name: metrics
+      protocol: TCP
+  selector:
+    app: nginx-ingress
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nginx-service-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - nginx-ingress
+  selector:
+    matchLabels:
+      app: nginx-exporter
+  endpoints:
+    - interval: 5s
+      port: metrics
+---
